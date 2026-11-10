@@ -1,0 +1,5 @@
+include LICENSE README.md build.sh
+recursive-include native *
+recursive-include tests *.py *.c
+recursive-include tests/data *
+recursive-include examples *.py

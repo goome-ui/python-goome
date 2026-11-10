@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+goome/_native/*
+!goome/_native/.keep
+test-out/

@@ -1,0 +1,110 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: native lib
+        run: WERROR=1 ./build.sh
+      - name: glibc 2.34
+        run: |
+          if objdump -T goome/_native/libgoome.so | grep -E 'GLIBC_2\.(3[5-9]|[4-9][0-9])\b'; then echo "needs a newer glibc"; exit 1; fi
+      - name: tests
+        run: GOOME_STRICT=1 python -m unittest -v
+      - name: hello on the test backend
+        run: GOOME_BACKEND=test GOOME_TEST_SCRIPT='screen 800x600 1; 2 click 100,100; 4 key hi; end 8' PYTHONPATH=. python examples/hello.py
+      - name: wheel
+        run: |
+          python -m pip install -q build
+          python -m build --wheel -o dist
+      - name: install from source, no prebuilt lib
+        run: |
+          rm -f goome/_native/libgoome.so
+          python -m venv "$RUNNER_TEMP/v"
+          "$RUNNER_TEMP/v/bin/pip" install -q .
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/v/bin/python" -c "import goome; print(goome.lib_path); print(goome.parse_combo('alt+h'))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-linux
+          path: dist/*.whl
+
+  linux-py38:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+      - name: native lib
+        run: ./build.sh
+      - name: tests
+        run: GOOME_STRICT=1 python -m unittest -v
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: native lib, mingw
+        shell: bash
+        run: CC=gcc WERROR=1 ./build.sh
+      - name: tests
+        shell: bash
+        run: CC=gcc GOOME_STRICT=1 python -m unittest -v
+      - name: hello on the test backend
+        shell: bash
+        run: GOOME_BACKEND=test GOOME_TEST_SCRIPT='screen 800x600 1; 2 click 100,100; 4 key hi; end 8' PYTHONPATH=. python examples/hello.py
+      - name: wheel
+        shell: bash
+        run: |
+          python -m pip install -q build
+          python -m build --wheel -o dist
+      - name: build at install with msvc
+        shell: pwsh
+        run: |
+          Remove-Item goome/_native/goome.dll
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          cmd /c "`"$vs\VC\Auxiliary\Build\vcvars64.bat`" && set CC=cl && python -m venv %RUNNER_TEMP%\v && %RUNNER_TEMP%\v\Scripts\pip install -q . && cd %RUNNER_TEMP% && %RUNNER_TEMP%\v\Scripts\python -c `"import goome; print(goome.lib_path); print(goome.parse_combo('alt+h'))`""
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-windows
+          path: dist/*.whl
+
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: native lib
+        run: WERROR=1 ./build.sh
+      - name: tests
+        run: GOOME_STRICT=1 python -m unittest -v
+      - name: hello on the test backend
+        run: GOOME_BACKEND=test GOOME_TEST_SCRIPT='screen 800x600 1; 2 click 100,100; 4 key hi; end 8' PYTHONPATH=. python examples/hello.py
+      - name: wheel
+        run: |
+          python -m pip install -q build
+          python -m build --wheel -o dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.os }}
+          path: dist/*.whl
