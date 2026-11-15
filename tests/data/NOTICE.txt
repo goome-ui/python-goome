@@ -1,0 +1,2 @@
+dejavu-sub.ttf and dejavu-sub.otf are a tiny subset of DejaVu Sans (Bitstream Vera / DejaVu fonts license), only the glyphs for "goome! HiAVWTy\u00e9.@".
+The images are the same test files c-goome uses (made by its tests/mkimages.py).
