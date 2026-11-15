@@ -1,0 +1,7 @@
+include LICENSE README.md build.sh
+recursive-include native *
+recursive-include tests *.py *.c
+recursive-include tests/data *
+recursive-include examples *.py
+recursive-include examples/assets *.png
+prune goome/_native
