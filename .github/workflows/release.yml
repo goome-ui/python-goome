@@ -1,0 +1,39 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  upload:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist/
+          merge-multiple: true
+      - name: sdist
+        run: |
+          grep -q "^version = \"${TAG#v}\"" pyproject.toml || { echo "pyproject.toml isnt ${TAG#v}"; exit 1; }
+          python -m pip install -q build
+          python -m build --sdist -o dist
+          ls -l dist
+      - name: upload
+        run: |
+          gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --verify-tag --title "goome ${TAG#v}" --notes "goome ${TAG#v}"
+          gh release upload "$TAG" dist/* --clobber
