@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.8%2B-6fdc5f?style=flat-square&logo=python&logoColor=1b1d22&labelColor=6fdc5f" alt="Python 3.8+">
-  <img src="https://img.shields.io/badge/ctypes-no%20deps-1b1d22?style=flat-square&labelColor=6fdc5f" alt="ctypes, no deps">
+  <img src="https://goome-ui.github.io/docs/assets/badges/python-38.svg" alt="Python 3.8+">
+  <img src="https://goome-ui.github.io/docs/assets/badges/ctypes-no-deps.svg" alt="ctypes, no deps">
   <img src="https://img.shields.io/badge/Linux-X11%20%2B%20Wayland-1b1d22?style=flat-square&logo=linux&logoColor=white" alt="Linux">
   <img src="https://img.shields.io/badge/Windows-10%20%2F%2011-1b1d22?style=flat-square&logo=windows11&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/macOS-14%2B-1b1d22?style=flat-square&logo=apple&logoColor=white" alt="macOS">
