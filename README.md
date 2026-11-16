@@ -10,6 +10,7 @@
 
 <p align="center">
   <img src="https://goome-ui.github.io/docs/assets/badges/python-38.svg" alt="Python 3.8+">
+  <a href="https://pypi.org/project/goome/"><img src="https://goome-ui.github.io/docs/assets/badges/pypi-goome.svg" alt="PyPI"></a>
   <img src="https://goome-ui.github.io/docs/assets/badges/ctypes-no-deps.svg" alt="ctypes, no deps">
   <img src="https://img.shields.io/badge/Linux-X11%20%2B%20Wayland-1b1d22?style=flat-square&logo=linux&logoColor=white" alt="Linux">
   <img src="https://img.shields.io/badge/Windows-10%20%2F%2011-1b1d22?style=flat-square&logo=windows11&logoColor=white" alt="Windows">
@@ -111,28 +112,31 @@ Python cant really get inside a game for mods, the other bindings do that part. 
 <br>
 
 ```sh
-pip install git+https://github.com/goome-ui/python-goome
+pip install goome
 ```
 
 <p align="center">
-It comes straight from this repo. When you install it, pip builds the goome library for your computer with your C compiler. That takes a few seconds and only happens once.<br> <br>
-If you don't have a compiler, on Debian/Ubuntu its <code>sudo apt install build-essential</code>, on Mac <code>xcode-select --install</code>, on Windows <a href="https://www.mingw-w64.org/">mingw-w64</a> gcc or Visual Studio (run it from the developer prompt). <code>CC</code> picks a different one.<br> <br>
-The wheels on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a> already have the library inside, <code>pip install</code> the one for your OS if you dont want to build anything.
+Its on <a href="https://pypi.org/project/goome/">PyPI</a>. The wheels for Linux x64, Windows x64 and both kinds of Mac already have the goome library inside, so nothing gets built.<br> <br>
+Anywhere else pip builds the library from the sdist with your C compiler, a few seconds and only once. If you don't have one, on Debian/Ubuntu its <code>sudo apt install build-essential</code>, on Mac <code>xcode-select --install</code>, on Windows <a href="https://www.mingw-w64.org/">mingw-w64</a> gcc or Visual Studio (run it from the developer prompt). <code>CC</code> picks a different one.
 </p>
 
 <h3 align="center">📦 Other Versions</h3>
 
-<p align="center">
-Put the version tag after an <code>@</code>:
-</p>
-
 ```sh
-pip install git+https://github.com/goome-ui/python-goome@v0.5.0
-pip install git+https://github.com/goome-ui/python-goome@v0.2.0
+pip install goome==0.5.1
 ```
 
 <p align="center">
-Or in a requirements.txt: <code>goome @ git+https://github.com/goome-ui/python-goome@v0.5.0</code>. Every version is on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a>.
+PyPI has 0.4.0 and up. Older ones, or the newest code on dev, come from git with the tag after an <code>@</code>:
+</p>
+
+```sh
+pip install git+https://github.com/goome-ui/python-goome@v0.2.0
+pip install git+https://github.com/goome-ui/python-goome@dev
+```
+
+<p align="center">
+Every version is on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a>.
 </p>
 
 <p align="center">
