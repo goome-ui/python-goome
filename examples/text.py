@@ -84,7 +84,7 @@ def main():
                 run = False
         if shot:
             save(g, shot)
-            print("saved %s, name is %r" % (shot, name))
+            print("saved %s, name has %d chars" % (shot, len(name)))
     for f in (font, emoji):
         if f is not None:
             f.close()
