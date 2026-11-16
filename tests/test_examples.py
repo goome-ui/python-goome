@@ -47,6 +47,23 @@ class Examples(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr.decode())
         self.assertIn("8 frames, gain 7.4 dB, playhead 2.4s, swatch 3, seg 1", r.stdout.decode())
 
+    def test_anim(self):
+        r = run("anim.py", "screen 880x760 1; end 120")
+        self.assertEqual(r.returncode, 0, r.stderr.decode())
+        self.assertRegex(r.stdout.decode(), r"120 frames, \d+ moving, side 1, mood red, bell 1")
+
+    def test_text(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "text.ppm")
+            e = dict(os.environ, PYTHONPATH=ROOT)
+            e.pop("GOOME_BACKEND", None)
+            r = subprocess.run([sys.executable, os.path.join(ROOT, "examples", "text.py"), p, os.path.join(HERE, "data", "dejavu-sub.ttf")], env=e,
+                               cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
+            self.assertEqual(r.returncode, 0, r.stderr.decode())
+            self.assertIn("saved", r.stdout.decode())
+            with open(p, "rb") as f:
+                self.assertEqual(f.read(15), b"P6\n1120 1200\n25")
+
     def test_app(self):
         code = ("import runpy, sys; m = runpy.run_path(%r); app = m['app']; "
                 "app.on_start(lambda: app.ui.theme.update(font=None)); sys.exit(m['main']())" % os.path.join(ROOT, "examples", "app.py"))
