@@ -127,12 +127,12 @@ Put the version tag after an <code>@</code>:
 </p>
 
 ```sh
-pip install git+https://github.com/goome-ui/python-goome@v0.4.0
+pip install git+https://github.com/goome-ui/python-goome@v0.5.0
 pip install git+https://github.com/goome-ui/python-goome@v0.2.0
 ```
 
 <p align="center">
-Or in a requirements.txt: <code>goome @ git+https://github.com/goome-ui/python-goome@v0.4.0</code>. Every version is on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a>.
+Or in a requirements.txt: <code>goome @ git+https://github.com/goome-ui/python-goome@v0.5.0</code>. Every version is on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a>.
 </p>
 
 <p align="center">
