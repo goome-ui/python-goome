@@ -189,6 +189,11 @@ class ItemS(Structure):
     ] + [(n, c_double) for n in ("mx", "my", "dx", "dy", "drag_x", "drag_y")] + [("key", c_int)]
 
 
+class A11yNodeS(Structure):
+    _fields_ = [("role", c_int), ("parent", c_int), ("states", c_int)] + [(n, c_double) for n in ("x", "y", "w", "h")] + [
+        ("label", c_char * 96), ("value", c_char * 64), ("id", c_uint32)] + [(n, c_double) for n in ("num", "min", "max")] + [("caret", c_int)]
+
+
 STRUCTS = {
     "goome_opts": Opts,
     "goome_rect": RectS,
@@ -204,6 +209,7 @@ STRUCTS = {
     "goome_ui_item": ItemS,
     "goome_combo": ComboS,
     "goome_ui_config": ConfigS,
+    "goome_a11y_node": A11yNodeS,
 }
 
 P = c_void_p
@@ -408,6 +414,18 @@ PROTOS = {
     "goome_ui_cfg": (POINTER(ConfigS), [P]),
     "goome_ui_config_default": (None, [POINTER(ConfigS)]),
     "goome_ui_bind": (I, [P, I, S]),
+    "goome_event_text": (S, [P]),
+    "goome_preedit_cursor": (I, [P]),
+    "goome_text_input": (I, [P, I, POINTER(RectS)]),
+    "goome_font_fallback": (None, [P, P]),
+    "goome_text_dir": (None, [I]),
+    "goome_ease": (D, [I, D]),
+    "goome_ui_anim": (D, [P, S, D, D, I]),
+    "goome_ui_anim_color": (U, [P, S, U, D, I]),
+    "goome_ui_a11y": (None, [P, I]),
+    "goome_ui_a11y_role": (None, [P, I, S]),
+    "goome_ui_a11y_value": (None, [P, S]),
+    "goome_a11y_tree": (I, [P, POINTER(A11yNodeS), I]),
 }
 
 

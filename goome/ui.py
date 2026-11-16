@@ -5,7 +5,7 @@ from ctypes import byref, c_char_p, c_double, c_float, c_int, c_uint32
 
 from . import _lib
 from ._lib import lib
-from .core import CURSORS, EGONE, ENOMEM, OK, WANT_KEYBOARD, WANT_MOUSE, GoomeError, _b, _cut, _s, error_for
+from .core import CONTROL, CURSORS, EGONE, ENOMEM, OK, WANT_KEYBOARD, WANT_MOUSE, GoomeError, _b, _cut, _s, error_for
 from .draw import Canvas, Font, _radii
 
 WIN_MOVE = 1
@@ -50,8 +50,8 @@ STYLE_NUMS = frozenset(STYLE_NAMES.index(n) for n in _lib.THEME_SIZES)
 
 ALIGN_NAMES = ("auto", "left", "center", "right")
 ALIGN_AUTO, ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT = range(4)
-EASE_NAMES = ("smooth", "linear", "out", "in_out", "back", "custom")
-EASE_SMOOTH, EASE_LINEAR, EASE_OUT, EASE_IN_OUT, EASE_BACK, EASE_CUSTOM = range(6)
+EASE_NAMES = ("smooth", "linear", "out", "in_out", "back", "custom", "in", "spring", "bounce")
+EASE_SMOOTH, EASE_LINEAR, EASE_OUT, EASE_IN_OUT, EASE_BACK, EASE_CUSTOM, EASE_IN, EASE_SPRING, EASE_BOUNCE = range(9)
 PRESET_NAMES = ("dark", "light", "midnight", "paper", "mint", "high_contrast", "rose")
 PRESET_DARK, PRESET_LIGHT, PRESET_MIDNIGHT, PRESET_PAPER, PRESET_MINT, PRESET_HIGH_CONTRAST, PRESET_ROSE, PRESET_COUNT = range(8)
 ACT_NAMES = ("copy", "cut", "paste", "undo", "redo", "select_all", "word_left", "word_right", "del_word_left", "del_word_right",
@@ -75,6 +75,18 @@ ICON_NAMES = ("arrow_down", "arrow_right", "arrow_up", "arrow_left", "check", "r
 (ICON_ARROW_DOWN, ICON_ARROW_RIGHT, ICON_ARROW_UP, ICON_ARROW_LEFT, ICON_CHECK, ICON_RADIO_DOT, ICON_CLOSE, ICON_MINIMIZE,
  ICON_MAXIMIZE, ICON_RESTORE, ICON_RESIZE, ICON_SORT_UP, ICON_SORT_DOWN, ICON_PLUS, ICON_MINUS, ICON_SLIDER_KNOB, ICON_TOGGLE_KNOB,
  ICON_COLLAPSE, ICON_EXPAND, ICON_DRAG_HANDLE, ICON_TOAST, ICON_PICKER, ICON_COUNT) = range(_lib.ICON_COUNT + 1)
+
+ROLE_NAMES = ("none", "window", "button", "checkbox", "radio", "slider", "text", "input", "combo", "list", "item", "tab", "menu",
+              "menuitem", "table", "tree", "progress", "image", "group", "dialog")
+(ROLE_NONE, ROLE_WINDOW, ROLE_BUTTON, ROLE_CHECKBOX, ROLE_RADIO, ROLE_SLIDER, ROLE_TEXT, ROLE_INPUT, ROLE_COMBO, ROLE_LIST, ROLE_ITEM,
+ ROLE_TAB, ROLE_MENU, ROLE_MENUITEM, ROLE_TABLE, ROLE_TREE, ROLE_PROGRESS, ROLE_IMAGE, ROLE_GROUP, ROLE_DIALOG) = range(20)
+
+A11Y_FOCUSED = 1
+A11Y_CHECKED = 2
+A11Y_DISABLED = 4
+A11Y_EXPANDED = 8
+A11Y_SELECTED = 16
+A11Y_ACTIONS = ("press", "set", "expand", "focus")
 
 ITEM_DRAG_X = 1
 ITEM_DRAG_Y = 2
@@ -432,6 +444,44 @@ class Item(object):
     def __repr__(self):
         on = [n for n in ("hovered", "pressed", "held", "released", "clicked", "double_clicked", "right_clicked", "focused") if getattr(self, n)]
         return "Item(%g, %g, %g, %g%s)" % (self.x, self.y, self.w, self.h, "".join(", " + n for n in on))
+
+
+def ease(kind, t):
+    return lib.goome_ease(_named(kind, EASE_NAMES, "ease"), float(t))
+
+
+class A11yNode(object):
+    __slots__ = ("index", "role", "parent", "states", "x", "y", "w", "h", "label", "value", "id", "num", "min", "max", "caret")
+
+    def __init__(self, s, index):
+        self.index = index
+        self.role = s.role
+        self.parent = s.parent
+        self.states = s.states
+        self.x, self.y, self.w, self.h = s.x, s.y, s.w, s.h
+        self.label = _s(s.label)
+        self.value = _s(s.value)
+        self.id = s.id
+        self.num, self.min, self.max = s.num, s.min, s.max
+        self.caret = s.caret
+
+    @property
+    def role_name(self):
+        return ROLE_NAMES[self.role] if 0 <= self.role < len(ROLE_NAMES) else str(self.role)
+
+    @property
+    def rect(self):
+        return (self.x, self.y, self.w, self.h)
+
+    focused = property(lambda self: bool(self.states & A11Y_FOCUSED))
+    checked = property(lambda self: bool(self.states & A11Y_CHECKED))
+    disabled = property(lambda self: bool(self.states & A11Y_DISABLED))
+    expanded = property(lambda self: bool(self.states & A11Y_EXPANDED))
+    selected = property(lambda self: bool(self.states & A11Y_SELECTED))
+
+    def __repr__(self):
+        more = " = %r" % self.value if self.value else ""
+        return "A11yNode(%d %s %r%s, parent %d)" % (self.index, self.role_name, self.label, more, self.parent)
 
 
 class _Style(object):
@@ -1095,6 +1145,38 @@ class Ui(object):
 
     def scale(self, s):
         lib.goome_ui_scale(self._h(), float(s))
+
+    def anim(self, id, target, ms=200, ease=EASE_OUT):
+        return lib.goome_ui_anim(self._h(), _b(id), float(target), float(ms), _named(ease, EASE_NAMES, "ease"))
+
+    def anim_color(self, id, target, ms=200, ease=EASE_OUT):
+        return lib.goome_ui_anim_color(self._h(), _b(id), int(target) & 0xFFFFFFFF, float(ms), _named(ease, EASE_NAMES, "ease"))
+
+    def a11y(self, on=True):
+        lib.goome_ui_a11y(self._h(), int(bool(on)))
+
+    def a11y_role(self, role, label=None):
+        lib.goome_ui_a11y_role(self._h(), _named(role, ROLE_NAMES, "role"), _b(label))
+
+    def a11y_value(self, value):
+        lib.goome_ui_a11y_value(self._h(), _b(value))
+
+    def a11y_tree(self):
+        n = lib.goome_a11y_tree(self._h(), None, 0)
+        while n > 0:
+            arr = (_lib.A11yNodeS * n)()
+            m = lib.goome_a11y_tree(self._h(), arr, n)
+            if m <= n:
+                return [A11yNode(arr[i], i) for i in range(m)]
+            n = m
+        return []
+
+    def a11y_action(self, action, node, text=None):
+        if action not in A11Y_ACTIONS:
+            raise ValueError("a11y action is one of %s, not %r" % (", ".join(A11Y_ACTIONS), action))
+        nid = node.id if isinstance(node, A11yNode) else int(node)
+        msg = "a11y %s %d" % (action, nid) + ("" if text is None else " %s" % text)
+        self._g.push(CONTROL, msg=msg)
 
     def custom(self, id, w=0, h=0, flags=0):
         s = _lib.ItemS()
