@@ -5,13 +5,13 @@ from .core import (
     DROP, EAGAIN, FMT_BGRA, FMT_BGRA_PREMUL, FMT_RGBA, FMT_RGBA_PREMUL, EARG, EDENIED, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT, EDGE_TOP, EGONE, ENODISPLAY, ENOMEM, ENOTSUP, FOCUS,
     GNOME, HOTKEY, K_BACKSPACE, K_DELETE, K_DOWN, K_END, K_ENTER, K_ESC, K_F1, K_F12, K_HOME, K_INSERT, K_LEFT, K_PGDN,
     K_PGUP, K_RIGHT, K_SPACE, K_TAB, K_UP, KEY, MACOS, MODE_OFFSCREEN, MODE_OVERLAY, MODE_WINDOW, MODES, MONITORS, MOTION,
-    NONE, OFFSCREEN, OK, PORTAL, QUIT, SCROLL, SHIFT, STATE_FULLSCREEN, STATE_MAXIMIZED, STATE_MINIMIZED, STATE_NORMAL,
-    SUPER, TEST, UP, VERSION, WANT_KEYBOARD, WANT_MOUSE, WAYLAND, WIN32, WINDOW_BORDERLESS, WINDOW_CENTER, WINDOW_HIDDEN,
+    NONE, OFFSCREEN, OK, PORTAL, PREEDIT, QUIT, SCROLL, SHIFT, STATE_FULLSCREEN, STATE_MAXIMIZED, STATE_MINIMIZED, STATE_NORMAL,
+    SUPER, TEST, TEXT, UP, VERSION, WANT_KEYBOARD, WANT_MOUSE, WAYLAND, WIN32, WINDOW_BORDERLESS, WINDOW_CENTER, WINDOW_HIDDEN,
     WINDOW_ON_TOP, WINDOW_RESIZABLE, WINDOW_TRANSPARENT, X11, Again, BadArg, Denied, Event, Frame, Goome, GoomeError, Gone, Image, Monitor,
     NoDisplay, NoMemory, NotSupported, Pacer, Pointer, Rect, now_ms, open, open_app, open_offscreen, parse_combo, save_ppm,
     send, strerror,
 )
-from .draw import Bitmap, Canvas, Font, Radii, font_count, line_height, measure, radius, set_font
+from .draw import DIR_AUTO, DIR_LTR, DIR_NAMES, DIR_RTL, Bitmap, Canvas, Font, Radii, font_count, line_height, measure, radius, set_font, text_dir
 from .ui import (
     APP_MENUBAR, APP_NO_PAD, APP_STATUSBAR, APP_TITLEBAR, EDIT_LINE_NUMBERS, EDIT_MONO, EDIT_READONLY, EDIT_WRAP,
     ITEM_DRAG_X, ITEM_DRAG_Y, ITEM_FOCUSABLE, ITEM_NO_HIT, ITEM_REPEAT, S_ACCENT, S_ACCENT_TEXT, S_ACTIVE, S_ANIM_MS, S_BG,
@@ -23,12 +23,12 @@ from .ui import (
     ICON_RESIZE, ICON_RESTORE, ICON_SLIDER_KNOB, ICON_SORT_DOWN, ICON_SORT_UP, ICON_TOAST, ICON_TOGGLE_KNOB, Icons, Item,
     TABLE_BORDERS, TABLE_RESIZABLE, TABLE_SORTABLE, TABLE_STRIPES, WIN_CLOSE, WIN_COLLAPSE, WIN_MOVE, WIN_NO_TITLE,
     WIN_RESIZE, ACT_NAMES, ALIGN_NAMES, CUR_NAMES, EASE_NAMES, PRESET_NAMES, STYLE_NAMES, Config, Cursors, Flag, Skin, Sort,
-    Split, Theme, Ui, Window,
+    Split, Theme, Ui, Window, A11yNode, ease,
 )
 from . import ui as _ui
 
 for _n in dir(_ui):
-    if _n.split("_")[0] in ("S", "INPUT", "ALIGN", "EASE", "PRESET", "ACT", "CUR") and _n.isupper():
+    if _n.split("_")[0] in ("S", "INPUT", "ALIGN", "EASE", "PRESET", "ACT", "CUR", "ROLE", "A11Y") and _n.isupper():
         globals()[_n] = getattr(_ui, _n)
 from .app import App
 from ._lib import path as lib_path

@@ -127,12 +127,12 @@ Put the version tag after an <code>@</code>:
 </p>
 
 ```sh
-pip install git+https://github.com/goome-ui/python-goome@v0.4.0
+pip install git+https://github.com/goome-ui/python-goome@v0.5.0
 pip install git+https://github.com/goome-ui/python-goome@v0.2.0
 ```
 
 <p align="center">
-Or in a requirements.txt: <code>goome @ git+https://github.com/goome-ui/python-goome@v0.4.0</code>. Every version is on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a>.
+Or in a requirements.txt: <code>goome @ git+https://github.com/goome-ui/python-goome@v0.5.0</code>. Every version is on the <a href="https://github.com/goome-ui/python-goome/releases">releases page</a>.
 </p>
 
 <p align="center">
@@ -399,6 +399,71 @@ Wayland doesnt let anyone grab the pointer, so there it only takes the keyboard 
 </details>
 
 <details>
+<summary align="center"><b>✨ Animations ✨</b></summary>
+
+<br>
+
+<p align="center">
+<code>ui.anim(id, target, ms, ease)</code> gives you a number that slides toward <code>target</code>, goome keeps the state for that id so you just call it every frame. <code>ui.anim_color</code> does the same for an ARGB color. While anything is still moving <code>ui.animating</code> is True, so your loop knows to keep drawing.
+</p>
+
+```python
+it = ui.custom("card", 0, 80)
+lift = ui.anim("card lift", 1 if it.hovered else 0, 160, goome.EASE_OUT)
+col = ui.anim_color("card", 0xFF2D6CDF if on else 0xFF3A3F49, 300, "spring")
+```
+
+<p align="center">
+The eases are <code>EASE_LINEAR</code>, <code>IN</code>, <code>OUT</code>, <code>IN_OUT</code>, <code>SMOOTH</code>, <code>BACK</code>, <code>SPRING</code> and <code>BOUNCE</code> (or their names as a str). <code>goome.ease(kind, t)</code> gives you the raw curve if you want to animate something yourself. <code>examples/anim.py</code> shows all of them next to each other.
+</p>
+</details>
+
+<details>
+<summary align="center"><b>🈳 IME And Typing 🈳</b></summary>
+
+<br>
+
+<p align="center">
+Inputs and text edits turn the IME on by themselves while they have focus, draw the text youre composing underlined at the caret, and put the finished text in. So Japanese, Chinese, Korean, dead keys and compose all just work in the ui kit.<br> <br>
+If you read events yourself, a <code>TEXT</code> event is finished text and a <code>PREEDIT</code> event is the text being composed. <code>ev.text</code> has all of it (not cut at 63 bytes like <code>ev.msg</code>), and on a preedit <code>ev.caret</code> is where the caret is in it, counted in characters. An empty preedit means composing ended.<br>
+<code>g.text_input(True, (x, y, w, h))</code> turns it on for your own widget and puts the candidate window by that rect. In an engine you push it in with <code>g.push_commit("日本")</code> and <code>g.push_preedit("にほん", 1)</code>.
+</p>
+</details>
+
+<details>
+<summary align="center"><b>♿ Accessibility ♿</b></summary>
+
+<br>
+
+<p align="center">
+The ui kit builds a tree of everything on screen every frame, and in window mode goome hands it to the screen reader (AT-SPI on Linux, UI Automation on Windows, NSAccessibility on macOS). Its on by default in window mode and off in overlay and offscreen, <code>ui.a11y(True)</code> turns it on.
+</p>
+
+```python
+ui.a11y_role("button", "Knob")        # for your next ui.custom
+ui.a11y_value("11")
+for n in ui.a11y_tree():               # A11yNode list, parent is an index into it
+    print(n.role_name, n.label, n.value, n.parent, n.checked, n.focused)
+ui.a11y_action("press", node)          # same as the screen reader pressing it
+```
+
+<p align="center">
+In an engine you read <code>ui.a11y_tree()</code> and bridge it to your own a11y stuff. The actions are <code>press</code>, <code>set</code> (with a text), <code>expand</code> and <code>focus</code>, they come in as a <code>CONTROL</code> event so widgets react like it was a click.
+</p>
+</details>
+
+<details>
+<summary align="center"><b>😀 Emoji And RTL 😀</b></summary>
+
+<br>
+
+<p align="center">
+Text draws color emoji (COLR, CBDT and sbix fonts), skin tones and ZWJ ones, plus Arabic and Hebrew with the right letter shapes and bidi. <code>Font.system()</code> adds the systems emoji font by itself. For a font you loaded, give it one with <code>font.fallback(emoji_font)</code>, it tries them in order for chars the font doesnt have (close the main font before its fallback).<br> <br>
+<code>goome.text_dir("rtl")</code> sets the paragraph direction for all text, <code>"auto"</code> (the default) picks it from the first strong letter of each line. Inputs and text edits move the caret and select right in RTL text too. <code>examples/text.py</code> has a bit of everything.
+</p>
+</details>
+
+<details>
 <summary align="center"><b>📚 The API 📚</b></summary>
 
 <br>
@@ -474,8 +539,10 @@ A grab stays good until you grab that monitor again. After that touching its pix
 - `examples/anything.py` - the same widgets 4 totally different ways (terminal, soft, game hud, dense) plus every preset and `Theme.make`
 - `examples/offscreen.py` - draws the ui with no window and saves it as a PNG, no Pillow needed
 - `examples/pygame_embed.py` - the ui on top of a pygame game, needs `pip install pygame`
+- `examples/anim.py` - every ease side by side, a color fade, a springy toggle and a bouncing badge
+- `examples/text.py` - emoji, Arabic and Hebrew in labels and inputs, with buttons to flip the text direction. `python examples/text.py out.ppm [font.ttf]` saves a shot instead
 
-Theyre ports of the C examples (`app.py` is `examples/app_ui.c`, `custom.py` is `examples/custom.c`). On the test backend the ui demo comes out pixel for pixel the same as `examples/ui.c`, and the offscreen one matches `examples/offscreen.c`.<br>
+Theyre ports of the C examples (`app.py` is `examples/app_ui.c`, `custom.py` is `examples/custom.c`). On the test backend the ui demo comes out pixel for pixel the same as `examples/ui.c`, and the offscreen one matches `examples/offscreen.c`, same for `text.py` and `examples/text.c`.<br>
 Way more small projects live in [goome-ui/examples](https://github.com/goome-ui/examples), the Python ones are a clock, a crosshair, a color picker, a timer, a todo list and a few more.
 
 ```sh

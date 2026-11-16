@@ -74,5 +74,9 @@ int main(void)
     F(goome_ui_config, repeat_ms); F(goome_ui_config, blink_ms); F(goome_ui_config, menu_delay_ms); F(goome_ui_config, toast_ms); F(goome_ui_config, scroll_lines);
     F(goome_ui_config, raise_on_click); F(goome_ui_config, esc_closes); F(goome_ui_config, tab_nav); F(goome_ui_config, focus_on_mouse); F(goome_ui_config, cursor);
     F(goome_ui_config, keys); F(goome_ui_config, ease); F(goome_ui_config, ease_user); F(goome_ui_config, mask);
+    S(goome_a11y_node);
+    F(goome_a11y_node, role); F(goome_a11y_node, parent); F(goome_a11y_node, states); F(goome_a11y_node, x); F(goome_a11y_node, y);
+    F(goome_a11y_node, w); F(goome_a11y_node, h); F(goome_a11y_node, label); F(goome_a11y_node, value); F(goome_a11y_node, id);
+    F(goome_a11y_node, num); F(goome_a11y_node, min); F(goome_a11y_node, max); F(goome_a11y_node, caret);
     return 0;
 }

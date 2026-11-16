@@ -44,8 +44,9 @@ WANT_KEYBOARD = 2
 
 FMT_BGRA_PREMUL, FMT_RGBA_PREMUL, FMT_BGRA, FMT_RGBA = range(4)
 
-NONE, DOWN, UP, MOTION, SCROLL, KEY, HOTKEY, CONTROL, MONITORS, QUIT, CLOSE, FOCUS, DROP = range(13)
-EVENT_NAMES = ("none", "down", "up", "motion", "scroll", "key", "hotkey", "control", "monitors", "quit", "close", "focus", "drop")
+NONE, DOWN, UP, MOTION, SCROLL, KEY, HOTKEY, CONTROL, MONITORS, QUIT, CLOSE, FOCUS, DROP, TEXT, PREEDIT = range(15)
+EVENT_NAMES = ("none", "down", "up", "motion", "scroll", "key", "hotkey", "control", "monitors", "quit", "close", "focus", "drop", "text",
+               "preedit")
 
 (CURSOR_ARROW, CURSOR_IBEAM, CURSOR_HAND, CURSOR_MOVE, CURSOR_RESIZE_EW, CURSOR_RESIZE_NS, CURSOR_RESIZE_NWSE, CURSOR_RESIZE_NESW,
  CURSOR_WAIT, CURSOR_NO, CURSOR_HIDDEN) = range(11)
@@ -75,7 +76,7 @@ CTRL = 0x200
 ALT = 0x400
 SUPER = 0x800
 
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 Rect = namedtuple("Rect", "x y w h")
 Pointer = namedtuple("Pointer", "x y buttons")
@@ -172,9 +173,9 @@ class Monitor(object):
 
 
 class Event(object):
-    __slots__ = ("type", "x", "y", "mon", "button", "dy", "key", "mods", "text", "id", "msg", "raw", "path")
+    __slots__ = ("type", "x", "y", "mon", "button", "dy", "key", "mods", "text", "id", "msg", "raw", "path", "caret")
 
-    def __init__(self, s, path=None):
+    def __init__(self, s, path=None, full=None):
         self.raw = s
         self.path = path
         self.type = s.type
@@ -188,12 +189,24 @@ class Event(object):
         self.text = _s(s.text)
         self.id = s.id
         self.msg = _s(s.msg)
+        self.caret = 0
+        if s.type in (TEXT, PREEDIT):
+            self.text = full if full is not None else self.msg
+            if s.type == PREEDIT:
+                self.caret = _chars(self.text, s.id)
 
     @classmethod
-    def make(cls, type, x=0.0, y=0.0, mon=0, button=0, dy=0, key=0, mods=0, text="", id=0, msg=""):
+    def make(cls, type, x=0.0, y=0.0, mon=0, button=0, dy=0, key=0, mods=0, text="", id=0, msg="", caret=None):
         s = _lib.EventS()
         s.type, s.x, s.y, s.mon, s.button, s.dy = int(type), x, y, int(mon), int(button), int(dy)
         s.key, s.mods, s.id = int(key), int(mods), int(id)
+        if type in (TEXT, PREEDIT):
+            if text and not msg:
+                if len(_b(text)) > 63:
+                    raise ValueError("pushed %s events hold 63 bytes at most, thats %d" % (EVENT_NAMES[type], len(_b(text))))
+                msg, text = text, ""
+            if type == PREEDIT and caret is not None:
+                s.id = len(_b(msg[: int(caret)]))
         s.text = _cut(text, 8)
         s.msg = _cut(msg, 64)
         return cls(s, path=msg if type == DROP and msg else None)
@@ -220,9 +233,17 @@ class Event(object):
             more = " gained" if self.id else " lost"
         elif t == DROP:
             more = " %.0f,%.0f %r" % (self.x, self.y, self.path or self.msg)
+        elif t == TEXT:
+            more = " %r" % self.text
+        elif t == PREEDIT:
+            more = " %r caret %d" % (self.text, self.caret)
         else:
             more = ""
         return "Event(%s%s)" % (self.name, more)
+
+
+def _chars(text, nbytes):
+    return len(_b(text)[: max(0, int(nbytes))].decode("utf-8", "ignore"))
 
 
 def _cut(text, size):
@@ -457,7 +478,8 @@ class Goome(object):
         rc = self._check(lib.goome_poll(self._h(), byref(s), int(timeout_ms)))
         if rc <= 0:
             return None
-        return Event(s, self.drop_path if s.type == DROP else None)
+        full = _s(lib.goome_event_text(self._g)) if s.type in (TEXT, PREEDIT) else None
+        return Event(s, self.drop_path if s.type == DROP else None, full)
 
     def events(self, timeout_ms=0):
         ev = self.poll(timeout_ms)
@@ -591,6 +613,24 @@ class Goome(object):
         for ch in text:
             k = ord(ch)
             self.push(KEY, key=k if k < 128 else 0, text=ch)
+
+    def push_commit(self, text):
+        self.push(TEXT, text=text)
+
+    def push_preedit(self, text, caret=None):
+        self.push(PREEDIT, text=text, caret=len(text) if caret is None else caret)
+
+    @property
+    def event_text(self):
+        return _s(lib.goome_event_text(self._h()))
+
+    @property
+    def preedit_cursor(self):
+        return _chars(self.event_text, lib.goome_preedit_cursor(self._h()))
+
+    def text_input(self, on=True, caret=None):
+        r = _rect(caret)
+        self._check(lib.goome_text_input(self._h(), int(bool(on)), byref(r) if r is not None else None))
 
     def push_click(self, x, y, button=1):
         self.push(MOTION, x=x, y=y)

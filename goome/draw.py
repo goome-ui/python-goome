@@ -8,6 +8,9 @@ from .core import EARG, EGONE, OK, GoomeError, Rect, _b, _rect, _s, error_for, p
 
 Radii = _lib.RadiiS
 
+DIR_AUTO, DIR_LTR, DIR_RTL = range(3)
+DIR_NAMES = ("auto", "ltr", "rtl")
+
 
 def radius(r):
     return lib.goome_radius(float(r))
@@ -28,6 +31,14 @@ def _c(argb):
 
 def set_font(font):
     lib.goome_set_font(int(font))
+
+
+def text_dir(dir=DIR_AUTO):
+    if isinstance(dir, str):
+        if dir.lower() not in DIR_NAMES:
+            raise ValueError("text direction is one of %s, not %r" % (", ".join(DIR_NAMES), dir))
+        dir = DIR_NAMES.index(dir.lower())
+    lib.goome_text_dir(int(dir))
 
 
 def font_count():
@@ -322,6 +333,8 @@ class Font(object):
         self._keep = keep
         self._owned = owned
         self._themes = weakref.WeakSet()
+        self._fallbacks = []
+        self._users = weakref.WeakSet()
 
     @classmethod
     def load(cls, path, index=None):
@@ -357,6 +370,19 @@ class Font(object):
     def closed(self):
         return self._f is None
 
+    def fallback(self, *fonts):
+        for f in fonts:
+            if f is self or f in self._fallbacks:
+                continue
+            lib.goome_font_fallback(self._h(), f._h())
+            self._fallbacks.append(f)
+            f._users.add(self)
+        return self
+
+    @property
+    def fallbacks(self):
+        return list(self._fallbacks)
+
     def measure(self, text, size):
         return measure(text, size, self)
 
@@ -369,9 +395,13 @@ class Font(object):
     def close(self):
         if self._f is None:
             return
+        busy = [u for u in self._users if u._f is not None]
+        if busy:
+            raise GoomeError(EARG, "this font is still the fallback of %d open font(s), close those first" % len(busy))
         for t in list(self._themes):
             t._drop_font(self)
         f, self._f = self._f, None
+        self._fallbacks = []
         if self._owned:
             lib.goome_font_free(f)
         self._keep = None
@@ -383,7 +413,7 @@ class Font(object):
         self.close()
 
     def __del__(self):
-        if getattr(self, "_f", None) and lib is not None and not self._themes:
+        if getattr(self, "_f", None) and lib is not None and not self._themes and not any(u._f for u in self._users):
             self.close()
 
     def __repr__(self):
