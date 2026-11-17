@@ -19,6 +19,7 @@ WINDOW_TRANSPARENT = 4
 WINDOW_ON_TOP = 8
 WINDOW_HIDDEN = 16
 WINDOW_CENTER = 32
+WINDOW_NO_TITLEBAR = 64
 
 OK = 0
 ENOTSUP = -1
@@ -76,7 +77,7 @@ CTRL = 0x200
 ALT = 0x400
 SUPER = 0x800
 
-VERSION = "0.5.1"
+VERSION = "0.5.2"
 
 Rect = namedtuple("Rect", "x y w h")
 Pointer = namedtuple("Pointer", "x y buttons")
