@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "goome"
-version = "0.5.2"
+version = "0.5.3"
 description = "goome for Python. See-through overlays, normal app windows, game mod menus and engine ui. One file, no dependencies, Linux, Windows, Mac."
 readme = "README.md"
 requires-python = ">=3.8"
