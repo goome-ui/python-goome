@@ -123,7 +123,7 @@ Anywhere else pip builds the library from the sdist with your C compiler, a few 
 <h3 align="center">📦 Other Versions</h3>
 
 ```sh
-pip install goome==0.5.1
+pip install goome==0.5.2
 ```
 
 <p align="center">
