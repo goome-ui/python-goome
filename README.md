@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <img src="https://goome-ui.github.io/docs/assets/badges/python-38.svg" alt="Python 3.8+">
-  <a href="https://pypi.org/project/goome/"><img src="https://goome-ui.github.io/docs/assets/badges/pypi-goome.svg" alt="PyPI"></a>
-  <img src="https://goome-ui.github.io/docs/assets/badges/ctypes-no-deps.svg" alt="ctypes, no deps">
+  <img src="https://goome.wtf/badges/python-38.svg" alt="Python 3.8+">
+  <a href="https://pypi.org/project/goome/"><img src="https://goome.wtf/badges/pypi-goome.svg" alt="PyPI"></a>
+  <img src="https://goome.wtf/badges/ctypes-no-deps.svg" alt="ctypes, no deps">
   <img src="https://img.shields.io/badge/Linux-X11%20%2B%20Wayland-1b1d22?style=flat-square&logo=linux&logoColor=white" alt="Linux">
   <img src="https://img.shields.io/badge/Windows-10%20%2F%2011-1b1d22?style=flat-square&logo=windows11&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/macOS-14%2B-1b1d22?style=flat-square&logo=apple&logoColor=white" alt="macOS">
@@ -19,8 +19,8 @@
 </p>
 
 <p align="center">
-  <a href="https://goome-ui.github.io/docs/">Docs</a> &nbsp;·&nbsp;
-  <a href="https://goome-ui.github.io/docs/builder/">Builder</a> &nbsp;·&nbsp;
+  <a href="https://goome.wtf/docs/">Docs</a> &nbsp;·&nbsp;
+  <a href="https://goome.wtf/builder/">Builder</a> &nbsp;·&nbsp;
   <a href="https://github.com/goome-ui/examples">Examples</a> &nbsp;·&nbsp;
   <a href="https://github.com/goome-ui/c-goome">C</a> &nbsp;·&nbsp;
   <a href="https://github.com/goome-ui/csharp-goome">C#</a> &nbsp;·&nbsp;
@@ -29,14 +29,14 @@
 </p>
 
 <p align="center">
-  To see what goome can do, grab one of the <a href="https://goome-ui.github.io/docs/downloads/">ready made apps</a>, like the HUD or the crosshair. To start your own, <code>goome new my-app --lang python</code> from <a href="https://github.com/goome-ui/goome-cli">goome-cli</a> makes it from a <a href="https://goome-ui.github.io/docs/templates/">template</a>.<br>
+  To see what goome can do, grab one of the <a href="https://goome.wtf/docs/downloads/">ready made apps</a>, like the HUD or the crosshair. To start your own, <code>goome new my-app --lang python</code> from <a href="https://github.com/goome-ui/goome-cli">goome-cli</a> makes it from a <a href="https://goome.wtf/docs/templates/">template</a>.<br>
   Questions go in <a href="https://github.com/goome-ui/c-goome/discussions">Discussions</a>. If you want to help, the <a href="https://github.com/goome-ui/python-goome/labels/good%20first%20issue">good first issues</a> are small ones to start with.
 </p>
 
 <p align="center">
   This is <a href="https://github.com/goome-ui/c-goome">goome</a> for Python. Draw over the whole screen and clicks only stop where you drew something.<br>
   It does app windows and pygame style offscreen frames too. It's plain ctypes on top of the C library, nothing to compile.<br>
-  The <a href="https://goome-ui.github.io/docs/builder/">builder</a> lets you drag a ui together in your browser and hands you the Python for it.<br> <br>
+  The <a href="https://goome.wtf/builder/">builder</a> lets you drag a ui together in your browser and hands you the Python for it.<br> <br>
   Do you like this project? If so, please let me know!
   <a href="https://sevvy-wevvy.com/discord">Discord</a>
 </p>
@@ -292,7 +292,7 @@ with ui.style(radius=99, accent=0xFFF59E0B):
 ```
 
 <p align="center">
-Swapping icons for your own pngs and drawing whole new widgets with <code>ui.custom</code> is in the <a href="https://goome-ui.github.io/docs/">docs</a>.<br>
+Swapping icons for your own pngs and drawing whole new widgets with <code>ui.custom</code> is in the <a href="https://goome.wtf/docs/">docs</a>.<br>
 If you'd rather just read code, <code>examples/custom.py</code> and <code>examples/skinned.py</code> do both.
 </p>
 </details>
@@ -473,7 +473,7 @@ Text draws color emoji (COLR, CBDT and sbix fonts), skin tones and ZWJ ones, plu
 <br>
 
 <p align="center">
-Everything from <a href="https://github.com/goome-ui/c-goome/blob/main/include/goome.h">goome.h</a> is in here, just pythony. <a href="https://goome-ui.github.io/docs/">The docs</a> explain every part of it. Errors raise <code>goome.GoomeError</code> (or a subclass like <code>goome.Again</code> or <code>goome.NotSupported</code>) with the C error code on <code>.code</code>.
+Everything from <a href="https://github.com/goome-ui/c-goome/blob/main/include/goome.h">goome.h</a> is in here, just pythony. <a href="https://goome.wtf/docs/">The docs</a> explain every part of it. Errors raise <code>goome.GoomeError</code> (or a subclass like <code>goome.Again</code> or <code>goome.NotSupported</code>) with the C error code on <code>.code</code>.
 </p>
 
 A few of the ones youll use all the time:
@@ -489,7 +489,7 @@ font = goome.Font.system()                # measure(text, size) gives (w, h)
 ```
 
 <p align="center">
-The rest (pointer, keyboard, the control fifo, <code>Pacer</code>, <code>Canvas.new</code> and the small helpers) is on <a href="https://goome-ui.github.io/docs/">the docs site</a>. The names there are the C ones, drop the <code>goome_</code> and its mostly the Python one.
+The rest (pointer, keyboard, the control fifo, <code>Pacer</code>, <code>Canvas.new</code> and the small helpers) is on <a href="https://goome.wtf/docs/">the docs site</a>. The names there are the C ones, drop the <code>goome_</code> and its mostly the Python one.
 </p>
 </details>
 
