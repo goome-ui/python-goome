@@ -29,7 +29,7 @@ test = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/goome-ui/python-goome"
-Documentation = "https://goome-ui.github.io/docs/"
+Documentation = "https://goome.wtf/docs/"
 Issues = "https://github.com/goome-ui/python-goome/issues"
 Changelog = "https://github.com/goome-ui/python-goome/releases"
 "C library" = "https://github.com/goome-ui/c-goome"

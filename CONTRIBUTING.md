@@ -2,7 +2,7 @@
 
 <p align="center">
 Thanks for wanting to help! Small PRs that fix one thing are the easiest for me to check and merge, so keep them small and theyll get in way faster.<br>
-This repo is only the Python side. If the bug is in goome itself (drawing, a backend, the ui kit) it goes to <a href="https://github.com/goome-ui/c-goome">c-goome</a> instead, docs fixes go to <a href="https://github.com/goome-ui/docs">goome-ui/docs</a> (thats <a href="https://goome-ui.github.io/docs/">goome-ui.github.io/docs</a>) and new example projects to <a href="https://github.com/goome-ui/examples">goome-ui/examples</a>.
+This repo is only the Python side. If the bug is in goome itself (drawing, a backend, the ui kit) it goes to <a href="https://github.com/goome-ui/c-goome">c-goome</a> instead, docs fixes go to <a href="https://github.com/goome-ui/docs">goome-ui/docs</a> (thats <a href="https://goome.wtf/docs/">goome.wtf/docs</a>) and new example projects to <a href="https://github.com/goome-ui/examples">goome-ui/examples</a>.
 </p>
 
 <details>
@@ -92,7 +92,7 @@ CI runs on linux (plus Python 3.8), windows and both macs when you open the PR. 
 • No cffi or compiled extension modules, users should never need a build step besides the library itself<br>
 • Every function in goome.h stays reachable. New C functions get added to <code>PROTOS</code> in <code>goome/_lib.py</code>, new struct fields to the struct there and to <code>tests/layout.c</code><br>
 • Anything that holds native memory gets a <code>close()</code> and works with <code>with</code>, and closing twice is fine<br>
-• Anything with a begin and an end in C works with <code>with</code> and calls the end exactly when <a href="https://goome-ui.github.io/docs/ui-app/">the docs</a> say C wants it<br>
+• Anything with a begin and an end in C works with <code>with</code> and calls the end exactly when <a href="https://goome.wtf/docs/ui-app/">the docs</a> say C wants it<br>
 • Match the code around it. snake_case, short names are fine inside functions<br>
 • No comments unless something really isnt obvious<br>
 • Dont reformat whole files, it makes the diff impossible to read
