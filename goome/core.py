@@ -78,7 +78,7 @@ CTRL = 0x200
 ALT = 0x400
 SUPER = 0x800
 
-VERSION = "0.5.3"
+VERSION = "0.5.5"
 
 Rect = namedtuple("Rect", "x y w h")
 Pointer = namedtuple("Pointer", "x y buttons")
