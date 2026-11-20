@@ -7,7 +7,7 @@ from .core import (
     K_PGUP, K_RIGHT, K_SPACE, K_TAB, K_UP, KEY, MACOS, MODE_OFFSCREEN, MODE_OVERLAY, MODE_WINDOW, MODES, MONITORS, MOTION,
     NONE, OFFSCREEN, OK, PORTAL, PREEDIT, QUIT, SCROLL, SHIFT, STATE_FULLSCREEN, STATE_MAXIMIZED, STATE_MINIMIZED, STATE_NORMAL,
     SUPER, TEST, TEXT, UP, VERSION, WANT_KEYBOARD, WANT_MOUSE, WAYLAND, WIN32, WINDOW_BORDERLESS, WINDOW_CENTER, WINDOW_HIDDEN,
-    WINDOW_NO_TITLEBAR, WINDOW_ON_TOP, WINDOW_RESIZABLE, WINDOW_TRANSPARENT, X11, Again, BadArg, Denied, Event, Frame, Goome, GoomeError, Gone, Image, Monitor,
+    WINDOW_NO_CONSOLE, WINDOW_NO_TITLEBAR, WINDOW_ON_TOP, WINDOW_RESIZABLE, WINDOW_TRANSPARENT, X11, Again, BadArg, Denied, Event, Frame, Goome, GoomeError, Gone, Image, Monitor,
     NoDisplay, NoMemory, NotSupported, Pacer, Pointer, Rect, now_ms, open, open_app, open_offscreen, parse_combo, save_ppm,
     send, strerror,
 )
