@@ -134,8 +134,8 @@ ALT = 0x400
 SUPER = 0x800
 """Modifier bit in `event.mods`: the super / windows / command key."""
 
-VERSION = "0.5.5"
-"""The goome version, like "0.5.5"."""
+VERSION = "0.5.6"
+"""The goome version, like "0.5.6"."""
 
 Rect = namedtuple("Rect", "x y w h")
 """A rectangle in logical coords, `Rect(x, y, w, h)`."""
