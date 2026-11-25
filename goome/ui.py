@@ -700,6 +700,7 @@ class Ui(object):
         self._pins = []
         self._spent = []
         self._layers = []
+        self._pushed = []
 
     def _h(self):
         if self._u is None:
@@ -726,6 +727,7 @@ class Ui(object):
         self._drop_layers()
         self._pins = []
         lib.goome_ui_free(u)
+        self._drop_pushed()
 
     def __enter__(self):
         return self
@@ -751,6 +753,7 @@ class Ui(object):
         self._used = set()
         self._pins = []
         self._spent = []
+        self._drop_pushed()
         if not p:
             self._canvas = None
             return None
@@ -770,6 +773,15 @@ class Ui(object):
         self._pins = []
         self._spent = []
         self._drop_layers()
+        self._drop_pushed()
+
+    def _drop_pushed(self):
+        fonts, self._pushed = self._pushed, []
+        for f in fonts:
+            f._frames.discard(self)
+            if f._late and not f._frames:
+                f._late = False
+                f.close()
 
     def _drop_layers(self):
         for c in self._layers:
@@ -1273,6 +1285,9 @@ class Ui(object):
         """Change the font until `pop()`. None is the built in one."""
         lib.goome_ui_push_font(self._h(), None if font is None else font._h())
         self._pin(font)
+        if font is not None:
+            font._frames.add(self)
+            self._pushed.append(font)
 
     def push_skin(self, kind, skin):
         """Change a widget skin until `pop()`. `kind` is a SKIN_* id or name, `skin` is (bitmap, border) or (bitmap, l, t, r, b), None removes it."""

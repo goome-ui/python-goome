@@ -391,6 +391,8 @@ class Font(object):
         self._themes = weakref.WeakSet()
         self._fallbacks = []
         self._users = weakref.WeakSet()
+        self._frames = weakref.WeakSet()
+        self._late = False
 
     @classmethod
     def load(cls, path, index=None):
@@ -464,6 +466,9 @@ class Font(object):
         busy = [u for u in self._users if u._f is not None]
         if busy:
             raise GoomeError(EARG, "this font is still the fallback of %d open font(s), close those first" % len(busy))
+        if self._frames:
+            self._late = True
+            return
         for t in list(self._themes):
             t._drop_font(self)
         f, self._f = self._f, None

@@ -182,6 +182,15 @@ class Kit(unittest.TestCase):
                         u.label("hi")
                 u.theme.font = None
                 sysf.close()
+            f = goome.Font.from_bytes(data("dejavu-sub.ttf"))
+            with u.frame(0):
+                with u.window("w", goome.Window()):
+                    u.push_font(f)
+                    f.close()
+                    self.assertFalse(f.closed)
+                    u.label("hi")
+                    u.pop()
+            self.assertTrue(f.closed)
             u.close()
             u.close()
             with self.assertRaises(goome.GoomeError):
