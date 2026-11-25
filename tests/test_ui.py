@@ -157,6 +157,15 @@ class Kit(unittest.TestCase):
                             with self.assertRaises(ValueError):
                                 fn()
 
+    def test_image_lifetime(self):
+        with goome.open_offscreen(100, 100) as g:
+            u = g.ui()
+            with u.frame(0):
+                with u.app("a"):
+                    u.image(goome.Bitmap.from_argb([0xFF00FF00] * 4096, 64, 64), 64, 64)
+                    junk = [goome.Bitmap.from_argb([0xFFFF0000] * 4096, 64, 64) for i in range(4)]
+            self.assertIn(0xFF00FF00, g.last_frame().pixels)
+
     def test_font_lifetime(self):
         with goome.open(backend="test", test_script="end 3") as g:
             u = g.ui()

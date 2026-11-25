@@ -848,12 +848,14 @@ class Ui(object):
     def image_button(self, id, bmp, w, h):
         """A button with a Bitmap on it, `id` tells it apart from other buttons. Returns True when clicked."""
         r = bool(lib.goome_ui_image_button(self._h(), _b(id), bmp._ref(), w, h))
+        self._spent.append(bmp)
         self.changed = r
         return r
 
     def image(self, bmp, w, h, radius=0):
         """Show a Bitmap at w by h, with optional rounded corners."""
         lib.goome_ui_image(self._h(), bmp._ref(), w, h, radius)
+        self._spent.append(bmp)
 
     def _flag(self, fn, label, value):
         v = c_int(int(bool(value)))
