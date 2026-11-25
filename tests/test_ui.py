@@ -145,6 +145,18 @@ class Kit(unittest.TestCase):
         plain = draw(lambda u: goome._lib.lib.goome_ui_label(u._u, b"100%% sure %%s"))
         self.assertEqual(draw(lambda u: u.label("100% sure %s")), plain)
 
+    def test_number_formats(self):
+        with goome.open_offscreen(200, 200) as g:
+            u = g.ui()
+            with u.frame(0):
+                with u.app("a"):
+                    u.slider("a", 0.5, 0, 1, "%.2f%%")
+                    u.number("b", 1, 1, "%5.1f px")
+                    for bad in ("%s", "%n", "%d", "%f%f", "%*f", "50%"):
+                        for fn in (lambda: u.slider("c", 0.5, 0, 1, bad), lambda: u.drag_float("d", 0.5, fmt=bad), lambda: u.number("e", 1, fmt=bad)):
+                            with self.assertRaises(ValueError):
+                                fn()
+
     def test_font_lifetime(self):
         with goome.open(backend="test", test_script="end 3") as g:
             u = g.ui()

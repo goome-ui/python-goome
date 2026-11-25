@@ -1,5 +1,6 @@
 import array
 import ctypes
+import re
 from collections import namedtuple
 from ctypes import byref, c_char_p, c_double, c_float, c_int, c_uint32
 
@@ -659,6 +660,16 @@ def _floats(values):
     return arr, n, (arr, vals)
 
 
+_NUM_FMT = re.compile(rb"(?:[^%]|%%)*(?:%[-+ #0]*\d*(?:\.\d+)?[eEfFgG](?:[^%]|%%)*)?")
+
+
+def _num_fmt(fmt):
+    raw = _b(fmt)
+    if raw is not None and not _NUM_FMT.fullmatch(raw):
+        raise ValueError("%r isnt a number format, use something like \"%%.2f\"" % (fmt,))
+    return raw
+
+
 def _strs(items):
     bs = [_b(i) for i in items]
     return (c_char_p * max(1, len(bs)))(*bs), len(bs)
@@ -866,7 +877,7 @@ class Ui(object):
     def slider(self, label, value, lo=0.0, hi=1.0, fmt=None):
         """A float slider from `lo` to `hi`. `fmt` is a printf format for the shown number, like "%.1f". Returns the new value."""
         v = c_double(value)
-        self.changed = bool(lib.goome_ui_slider(self._h(), _b(label), byref(v), lo, hi, _b(fmt)))
+        self.changed = bool(lib.goome_ui_slider(self._h(), _b(label), byref(v), lo, hi, _num_fmt(fmt)))
         return v.value
 
     def slider_int(self, label, value, lo=0, hi=100):
@@ -1144,7 +1155,7 @@ class Ui(object):
     def drag_float(self, label, value, speed=1.0, lo=0.0, hi=0.0, fmt=None):
         """A number you drag left and right to change. `speed` is the change per px, `lo` and `hi` limit it (both 0 means no limit). Returns the new value."""
         v = c_double(value)
-        self.changed = bool(lib.goome_ui_drag_float(self._h(), _b(label), byref(v), speed, lo, hi, _b(fmt)))
+        self.changed = bool(lib.goome_ui_drag_float(self._h(), _b(label), byref(v), speed, lo, hi, _num_fmt(fmt)))
         return v.value
 
     def drag_int(self, label, value, speed=1.0, lo=0, hi=0):
@@ -1156,7 +1167,7 @@ class Ui(object):
     def number(self, label, value, step=1.0, fmt=None):
         """A number box with minus and plus buttons, `step` is how much they add. Returns the new value."""
         v = c_double(value)
-        self.changed = bool(lib.goome_ui_number(self._h(), _b(label), byref(v), step, _b(fmt)))
+        self.changed = bool(lib.goome_ui_number(self._h(), _b(label), byref(v), step, _num_fmt(fmt)))
         return v.value
 
     def _plot(self, fn, label, values, lo, hi, h):
