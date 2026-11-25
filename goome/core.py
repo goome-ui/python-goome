@@ -684,6 +684,7 @@ class Goome(object):
     @size.setter
     def size(self, wh):
         self._check(lib.goome_window_size(self._h(), int(wh[0]), int(wh[1])))
+        self._began += 1
 
     def resize(self, w, h, scale=0.0):
         """Resize an offscreen surface (with a new `scale` if you want) or a window. Size is in logical px."""
@@ -691,6 +692,7 @@ class Goome(object):
             self._check(lib.goome_resize(self._h(), int(w), int(h), float(scale)))
         else:
             self._check(lib.goome_window_size(self._h(), int(w), int(h)))
+        self._began += 1
 
     @property
     def pos(self):

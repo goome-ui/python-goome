@@ -124,7 +124,11 @@ class Offscreen(unittest.TestCase):
             c = g.begin(0)
             self.assertEqual((c.w, c.h), (600, 300))
             g.end(c)
+            f = g.last_frame()
             g.resize(300, 150, 1)
+            self.assertFalse(f.fresh)
+            with self.assertRaises(goome.GoomeError):
+                f.pixels
             self.assertEqual(g.monitors()[0].pw, 300)
             with self.assertRaises(goome.BadArg):
                 g.resize(0, 10, 1)
